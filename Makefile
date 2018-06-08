@@ -17,7 +17,7 @@ INST_PREFIX = /usr/local
 INST_LIBDIR = $(INST_PREFIX)/lib/lua/5.2
 INST_LUADIR = $(INST_PREFIX)/share/lua/5.2
 
-DOCS_DIR := api
+DOCS_DIR := docs
 BUILD_DIR := build
 C_SRC_ROOT := src/luaharfbuzz
 SOURCES := luaharfbuzz.c blob.c face.c font.c buffer.c feature.c class_utils.c
@@ -37,9 +37,6 @@ ${BUILD_DIR}:
 	mkdir -p ${BUILD_DIR}
 
 spec: all
-	busted --exclude-tags="mac" .
-
-spec-all: all
 	busted .
 
 clean:
@@ -56,4 +53,4 @@ install: luaharfbuzz.so src/harfbuzz.lua
 	cp luaharfbuzz.so $(INST_LIBDIR)
 	cp src/harfbuzz.lua $(INST_LUADIR)
 
-.PHONY: all clean test dirs install lint spec spec-all doc
+.PHONY: all clean test dirs install lint spec doc
