@@ -37,6 +37,9 @@ ${BUILD_DIR}:
 	mkdir -p ${BUILD_DIR}
 
 spec: all
+	busted --exclude-tags="mac" .
+
+spec-all: all
 	busted .
 
 clean:
@@ -53,4 +56,4 @@ install: luaharfbuzz.so src/harfbuzz.lua
 	cp luaharfbuzz.so $(INST_LIBDIR)
 	cp src/harfbuzz.lua $(INST_LUADIR)
 
-.PHONY: all clean test dirs install lint spec doc
+.PHONY: all clean test dirs install lint spec spec-all doc
