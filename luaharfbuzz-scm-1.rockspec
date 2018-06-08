@@ -1,17 +1,8 @@
--- This file was automatically generated for the LuaDist project.
-
 package = "luaharfbuzz"
-version = "0.0.6-0"
--- LuaDist source
+version = "scm-1"
 source = {
-  tag = "0.0.6-0",
-  url = "git://github.com/LuaDist-testing/luaharfbuzz.git"
+  url = "git://github.com/deepakjois/luaharfbuzz"
 }
--- Original source
--- source = {
---   url = "git://github.com/deepakjois/luaharfbuzz",
---   tag = "v0.0.6"
--- }
 description = {
   summary = "Lua bindings for the Harfbuzz text shaping library",
   homepage = "https://github.com/deepakjois/luaharfbuzz",
