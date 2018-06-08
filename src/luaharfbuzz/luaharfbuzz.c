@@ -6,7 +6,7 @@ int shape_full (lua_State *L) {
   luaL_checktype(L, 3, LUA_TTABLE);
 
   lua_len (L, 3);
-  unsigned int num_features = luaL_checkinteger(L, 4);
+  unsigned int num_features = luaL_checkint(L, 4);
   lua_pop(L, 1);
 
   Feature *features = (Feature *) malloc (num_features * sizeof(hb_feature_t));
@@ -66,22 +66,6 @@ int luaopen_luaharfbuzz (lua_State *L) {
 
   register_feature(L);
   lua_setfield(L, -2, "Feature");
-
-  register_tag(L);
-  lua_setfield(L, -2, "Tag");
-
-  register_script(L);
-  lua_setfield(L, -2, "Script");
-
-  register_direction(L);
-  lua_setfield(L, -2, "Direction");
-
-  register_language(L);
-  lua_setfield(L, -2, "Language");
-
-  register_unicode(L);
-  lua_setfield(L, -2, "unicode");
-
   luaL_setfuncs(L, lib_table,0);
 
   return 1;

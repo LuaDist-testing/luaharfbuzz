@@ -41,7 +41,7 @@ describe("harfbuzz module shaping functions", function()
     local buf = harfbuzz.Buffer.new()
     buf:add_utf8(urdu_text)
 
-    harfbuzz.shape(font, buf, { language = harfbuzz.Language.new("urd"), script = harfbuzz.Script.new("Arab"), direction = harfbuzz.Direction.HB_DIRECTION_RTL })
+    harfbuzz.shape(font, buf, { language = "urd", script = "Arab", direction = "rtl" })
     local glyphs = buf:get_glyph_infos_and_positions()
     assert.True(#glyphs > 0)
 
@@ -49,27 +49,11 @@ describe("harfbuzz module shaping functions", function()
     compare_glyphs_against_fixture(glyphs, 'notonastaliq_U06CC_U06C1.json')
   end)
 
-  it("can take codepoints, font and an options table with script, language and direction settings. #mac", function()
-    local buf = harfbuzz.Buffer.new()
-    local korean_text = { 0xAC00, 0xB098, 0xB2E4 }
-    buf:add_codepoints(korean_text)
-
-    local face_korean = harfbuzz.Face.new('/Library/Fonts/AppleGothic.ttf')
-    local font_korean = harfbuzz.Font.new(face_korean)
-
-    harfbuzz.shape(font_korean, buf, { language = harfbuzz.Language.new("KOR"), script = harfbuzz.Script.new("hang"), direction = harfbuzz.Direction.HB_DIRECTION_LTR })
-    local glyphs = buf:get_glyph_infos_and_positions()
-    assert.True(#glyphs > 0)
-
-    -- Compare against output of hb-shape
-    compare_glyphs_against_fixture(glyphs, 'AppleGothic_korean_issue_22.json')
-  end)
-
   it("can take a string containing a comma-delimited list of valid features", function()
     local buf = harfbuzz.Buffer.new()
     buf:add_utf8(urdu_text)
 
-    harfbuzz.shape(font, buf, { language = harfbuzz.Language.new("urd"), script = harfbuzz.Script.new("Arab"), direction = harfbuzz.Direction.HB_DIRECTION_RTL, features = "+kern,smcp" })
+    harfbuzz.shape(font, buf, { language = "urd", script = "Arab", direction = "rtl", features = "+kern,smcp" })
     local glyphs = buf:get_glyph_infos_and_positions()
     assert.True(#glyphs > 0)
   end)
@@ -81,7 +65,7 @@ describe("harfbuzz module shaping functions", function()
     before_each(function()
       buf= harfbuzz.Buffer.new()
       buf:add_utf8(urdu_text)
-      options = { language = harfbuzz.Language.new("urd"), script = harfbuzz.Script.new("Arab"), direction = harfbuzz.Direction.HB_DIRECTION_RTL }
+      options = { language = "urd", script = "Arab", direction = "rtl" }
     end)
 
     it("can take a table containing a valid features", function()
@@ -123,7 +107,7 @@ describe("harfbuzz module shaping functions", function()
     it("shapes a string appropriately with the features turned on",function()
       buf= harfbuzz.Buffer.new()
       buf:add_utf8("123")
-      local opts = { language = harfbuzz.Language.new("eng"), script = harfbuzz.Script.new("Latn"), direction = harfbuzz.Direction.HB_DIRECTION_LTR }
+      local opts = { language = "eng", script = "Latn", direction = "ltr" }
       local amiri_face = harfbuzz.Face.new('fonts/amiri-regular.ttf')
       local amiri_font = harfbuzz.Font.new(amiri_face)
 

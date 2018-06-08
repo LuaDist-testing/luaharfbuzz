@@ -5,7 +5,7 @@ describe("harfbuzz.Buffer", function()
     harfbuzz.Buffer.new()
   end)
 
-  it("can add a UTF8 string", function()
+  it("can add a UTF8 string to the buffer", function()
     local b = harfbuzz.Buffer.new()
     local s = "Some String"
     b:add_utf8(s)
@@ -20,36 +20,12 @@ describe("harfbuzz.Buffer", function()
     assert.are_equal(string.len(s) - o, b:get_length())
   end)
 
-  it("can add a UTF 8 string with item_length", function()
+  it("can add a UTF 8 string with item_offset", function()
     local b = harfbuzz.Buffer.new()
     local s = "Some String"
     local o = 5
     local l = 2
     b:add_utf8(s,o,l)
-    assert.are_equal(l, b:get_length())
-  end)
-
-  it("can add codepoints", function()
-    local b = harfbuzz.Buffer.new()
-    local s = { 0x06CC, 0x06C1 }
-    b:add_codepoints(s)
-    assert.are_equal(#s, b:get_length())
-  end)
-
-  it("can add codepoints with item_offset", function()
-    local b = harfbuzz.Buffer.new()
-    local s = { 0x06CC, 0x06C1 }
-    local o = 1
-    b:add_codepoints(s,o)
-    assert.are_equal(#s - o, b:get_length())
-  end)
-
-  it("can add codepoints with item_length", function()
-    local b = harfbuzz.Buffer.new()
-    local s = { 0x06CC, 0x06C1 }
-    local o = 1
-    local l = 1
-    b:add_codepoints(s,o,l)
     assert.are_equal(l, b:get_length())
   end)
 
@@ -62,71 +38,65 @@ describe("harfbuzz.Buffer", function()
   it("can get and set the direction of a buffer", function()
     local b = harfbuzz.Buffer.new()
     b:add_utf8("abc")
-    local dir = harfbuzz.Direction.HB_DIRECTION_RTL
-    b:set_direction(dir)
-    assert.are_equal(dir, b:get_direction())
+    b:set_direction("rtl")
+    assert.are_equal("rtl", b:get_direction())
   end)
 
-  it("sets direction to HB_DIRECTION_INVALID if direction is invalid", function()
+  it("throws an error if direction is invalid", function()
     local b = harfbuzz.Buffer.new()
-    b:set_direction(harfbuzz.Direction.new("invalid"))
-    assert.are_equal(harfbuzz.Direction.HB_DIRECTION_INVALID, b:get_direction())
+    assert.has_error(function() b:set_direction("fff") end, "Invalid direction")
   end)
 
   it("can get the direction correctly", function()
     local b = harfbuzz.Buffer.new()
     b:add_utf8("یہ")
     b:guess_segment_properties()
-    assert.are_equal(harfbuzz.Direction.HB_DIRECTION_RTL, b:get_direction())
+    assert.are_equal("rtl", b:get_direction())
   end)
 
   it("can get and set the language of a buffer", function()
     local b = harfbuzz.Buffer.new()
     b:add_utf8("یہ")
-    local urd = harfbuzz.Language.new("urd")
-    b:set_language(urd)
-    assert.are_equal(urd, b:get_language())
+    b:set_language("urd")
+    assert.are_equal("urd", b:get_language())
   end)
 
-  it("Sets language to HB_LANGUAGE_INVALID if language is invalid", function()
+  it("throws an error if language is invalid", function()
     local b = harfbuzz.Buffer.new()
-    b:set_language(harfbuzz.Language.HB_LANGUAGE_INVALID)
-    assert.are_equal(harfbuzz.Language.HB_LANGUAGE_INVALID, b:get_language())
+    assert.has_error(function() b:set_language("") end, "Invalid language")
   end)
 
   it("can get the language correctly", function()
     local b = harfbuzz.Buffer.new()
     b:add_utf8("یہ")
     b:guess_segment_properties()
-    assert.are_not_equal(harfbuzz.Language.HB_LANGUAGE_INVALID, b:get_language())
   end)
 
   it("can get and set the script of a buffer", function()
     local b = harfbuzz.Buffer.new()
     b:add_utf8("abc")
-    b:set_script(harfbuzz.Script.new("latn"))
-    assert.are_equal("Latn", tostring(b:get_script()))
+    b:set_script("latn")
+    assert.are_equal("Latn", b:get_script())
   end)
 
-  it("returns script as HB_SCRIPT_UNKNOWN if script is invalid", function()
+  it("throws an error if script is invalid", function()
     local b = harfbuzz.Buffer.new()
-    b:set_script(harfbuzz.Script.new("xxx"))
-    assert.are_equal(harfbuzz.Script.HB_SCRIPT_UNKNOWN, b:get_script())
+    assert.has_error(function() b:set_script("xxx") end, "Unknown script")
   end)
 
   it("can get the script correctly", function()
     local b = harfbuzz.Buffer.new()
     b:add_utf8("یہ")
-    assert.are_equal(harfbuzz.Script.new(""), b:get_script())
+    assert.are_equal("", b:get_script())
     b:guess_segment_properties()
-    assert.are_equal(harfbuzz.Script.new("Arab"), b:get_script())
+    assert.are_equal("Arab", b:get_script())
   end)
 
   it("can reverse the buffer", function()
     local face = harfbuzz.Face.new('fonts/notonastaliq.ttf')
     local font = harfbuzz.Font.new(face)
     local urdu_text = "یہ" -- U+06CC U+06C1
-    local options = { language = harfbuzz.Language.new("urd"), script = harfbuzz.Script.new("Arab"), direction = harfbuzz.Direction.HB_DIRECTION_RTL }
+    local options = { language = "urd", script = "Arab", direction = "rtl" }
 
     local buf= harfbuzz.Buffer.new()
     buf:add_utf8(urdu_text)
@@ -155,17 +125,6 @@ describe("harfbuzz.Buffer", function()
     local s = "some string"
     b:add_utf8(s)
     assert.are_equal(string.len(s), b:get_length())
-  end)
-
-  it("can get the cluster level of the buffer", function()
-    local b = harfbuzz.Buffer.new()
-    assert.are_equal(harfbuzz.Buffer.HB_BUFFER_CLUSTER_LEVEL_DEFAULT, b:get_cluster_level())
-  end)
-
-  it("can set the cluster level of the buffer", function()
-    local b = harfbuzz.Buffer.new()
-    b:set_cluster_level(harfbuzz.Buffer.HB_BUFFER_CLUSTER_LEVEL_CHARACTERS)
-    assert.are_equal(harfbuzz.Buffer.HB_BUFFER_CLUSTER_LEVEL_CHARACTERS, b:get_cluster_level())
   end)
 end)
 

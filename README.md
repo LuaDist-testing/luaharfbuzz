@@ -37,25 +37,22 @@ Install via [Homebrew](http://brew.sh/)
 ```
 brew install harfbuzz
 ```
-#### Ubuntu Linux
-
-```
-apt-get install libharfbuzz0b libharfbuzz-dev
-```
-
-#### Windows
-Getting the whole setup running on Windows is very tedious, so all instructions are in their own file [README-win.md](https://github.com/deepakjois/luaharfbuzz/blob/master/README-win.md).
 
 #### Other Platforms
 _Send a pull request if you want to include specific instructions to install
 Harfbuzz on your preferred platform._
 
-Before building the package, LuaRocks populates the `HARFBUZZ_INCDIR` and `HARFBUZZ_LIBDIR` to point to the correct locations. If you can populate these variables manually before running LuaRocks, you can install _luaharfbuzz_ on any system that supports Lua and Harfbuzz.
+Before building, the Makefile looks for Harfbuzz headers and libraries using `pkg-config`. If the following commands run without errors, then it should be possible to install _luaharfbuzz_ by following instructions given in the next section.
+
+```
+pkg-config --cflags harfbuzz lua
+pkg-config --libs harfbuzz
+```
 
 ## Installing _luaharfbuzz_
 
 #### Luarocks
-If [Luarocks] and Harfbuzz are installed, _luaharfbuzz_ can be installed like this:
+If [Luarocks] is installed, _luaharfbuzz_ can be installed like this:
 
 ```
 luarocks install luaharfbuzz
@@ -63,9 +60,12 @@ luarocks install luaharfbuzz
 
 [Luarocks]: https://luarocks.org
 
+#### Directly Using Makefile
+See [Building](#building)
+
 ## Documentation
-* [API Docs](http://ufytex.github.io/luaharfbuzz/)
-* [Wiki](http://github.com/ufytex/luaharfbuzz/wiki)
+* [API Docs](http://deepakjois.github.io/luaharfbuzz/api/)
+* [Wiki](http://github.com/deepakjois/luaharfbuzz/wiki)
 
 ## Sample Code
 
@@ -82,7 +82,7 @@ print("Harfbuzz API version", harfbuzz.version())
 print("Shapers:", serpent.line({ harfbuzz.shapers() }, {comment = false}))
 
 -- harfbuzz.Face
-local face = harfbuzz.Face.new('../fonts/notonastaliq.ttf')
+local face = harfbuzz.Face.new('fonts/notonastaliq.ttf')
 print('\nFace upem = '..face:get_upem())
 
 -- harfbuzz.Font
@@ -97,14 +97,14 @@ buf:add_utf8(text)
 
 -- harfbuzz.shape (Shapes text)
 print("\nShaping '"..text.."' set with Noto Nastaliq Urdu")
-harfbuzz.shape(font, buf, { language = harfbuzz.Language.new("urd"), script = harfbuzz.Script.new("Arab"), direction = harfbuzz.Direction.HB_DIRECTION_RTL})
+harfbuzz.shape(font, buf, { language = "urd", script = "Arab", direction = "rtl" })
 
 local glyphs = buf:get_glyph_infos_and_positions()
 print("No. of glyphs", #glyphs)
 print(serpent.line(glyphs, {comment = false}))
 
-local opts = { language = harfbuzz.Language.new("eng"), script = harfbuzz.Script.new("Latn"), direction = harfbuzz.Direction.HB_DIRECTION_LTR }
-local amiri_face = harfbuzz.Face.new('../fonts/amiri-regular.ttf')
+local opts = { language = "eng", script = "Latn", direction = "ltr" }
+local amiri_face = harfbuzz.Face.new('fonts/amiri-regular.ttf')
 local amiri_font = harfbuzz.Font.new(amiri_face)
 
 -- shaping '123' w/o features
@@ -128,11 +128,7 @@ print(serpent.line(glyphs, {comment = false}))
 ## Development
 
 #### Building
-You can build the package for development purposes using LuaRocks as well. It is recommended that you build it to your local tree (using `--local`) to isolate it from your actual installation.
-
-```
-luarocks --local make
-```
+It is possible to build _luaharfbuzz_ using the Makefile provided in the distribution. Running `make` will build the library `luaharfbuzz.so` in the root directory of the repo. The Lua source files are located under the `src` directory. To use them with Lua, you will need to update your `package.path` and `package.cpath` approrpriately.
 
 #### Testing and Linting
 In order to make changes to the code and run the tests, the following dependencies need to be installed:

@@ -9,15 +9,24 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+// Taken from http://stackoverflow.com/questions/34021480/any-tips-to-reduce-repetition-when-using-lua-c-functions/34021760#34021760
+#define lua_push(X) _Generic((X), \
+  const char*: lua_pushstring, \
+  float: lua_pushnumber, \
+  double: lua_pushnumber, \
+  int: lua_pushinteger, \
+  unsigned int: lua_pushinteger)(L, X)
+
+#define lua_setfield_generic(NAME, X) \
+  lua_push(X); \
+  lua_setfield(L, -2, NAME);
+
+
 typedef hb_blob_t* Blob;
 typedef hb_face_t* Face;
 typedef hb_font_t* Font;
 typedef hb_buffer_t* Buffer;
 typedef hb_feature_t Feature;
-typedef hb_tag_t Tag;
-typedef hb_script_t Script;
-typedef hb_direction_t Direction;
-typedef hb_language_t Language;
 
 // Functions to create classes and push them onto the stack
 int register_class(lua_State *L, const char *name, const luaL_Reg * methods, const luaL_Reg *functions);
@@ -26,8 +35,5 @@ int register_face(lua_State *L);
 int register_font(lua_State *L);
 int register_buffer(lua_State *L);
 int register_feature(lua_State *L);
-int register_tag(lua_State *L);
-int register_script(lua_State *L);
-int register_direction(lua_State *L);
-int register_language(lua_State *L);
-int register_unicode(lua_State *L);
+
+
